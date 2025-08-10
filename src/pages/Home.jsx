@@ -1,20 +1,12 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Star, ShoppingBag } from 'lucide-react';
+import { ArrowRight, Star } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import ProductCard from '../components/ProductCard';
-import { fetchProducts } from '../store/slices/productsSlice';
-import { featuredProducts, testimonials } from '../data/mockData';
+import { testimonials } from '../data/mockData';
 
 const Home = () => {
-  const dispatch = useDispatch();
-  const { items: products, loading } = useSelector((state) => state.products);
-
-  useEffect(() => {
-    dispatch(fetchProducts());
-  }, [dispatch]);
+  
 
   // Replace these URLs with your own image URLs
   const streetwearImages = [
@@ -27,6 +19,60 @@ const Home = () => {
     "https://res.cloudinary.com/dtju1n77g/image/upload/v1754418474/2_nxujvi.png",
     "https://res.cloudinary.com/dtju1n77g/image/upload/v1754419475/20png_eknaju.jpg",
   ];
+
+  // Gym section carousels (2 images each)
+  const gymLeftImages = [
+    'https://res.cloudinary.com/dtju1n77g/image/upload/v1754785154/tog5_wzhom9.jpg',
+    'https://res.cloudinary.com/dtju1n77g/image/upload/v1754782818/gym_syxeba.jpg',
+  ];
+  const gymRightImages = [
+    'https://res.cloudinary.com/dtju1n77g/image/upload/v1754418530/11png_qny3md.jpg',
+    'https://res.cloudinary.com/dtju1n77g/image/upload/v1754786558/5656_vb1kzm.jpg',
+  ];
+
+  const [showTop, setShowTop] = useState(true); // start on image 1 (top)
+  const [streetBg, setStreetBg] = useState('#ffffff');
+
+  const handleStreetFirstImageLoad = (e) => {
+    try {
+      const img = e.target;
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      const width = 20;
+      const height = 20;
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+      const { data } = ctx.getImageData(0, 0, width, height);
+      let r = 0, g = 0, b = 0, count = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        const alpha = data[i + 3];
+        if (alpha > 0) {
+          r += data[i];
+          g += data[i + 1];
+          b += data[i + 2];
+          count++;
+        }
+      }
+      if (count) {
+        r = Math.round(r / count);
+        g = Math.round(g / count);
+        b = Math.round(b / count);
+        setStreetBg(`rgb(${r}, ${g}, ${b})`);
+      }
+    } catch (err) {
+      // ignore color extraction errors
+    }
+  };
+ 
+  useEffect(() => {
+    const id = setInterval(() => {
+      setShowTop((v) => !v); // toggle between top (image 1) and bottom (image 2)
+    }, 3000); // 3 seconds
+    return () => clearInterval(id);
+  }, []);
+
+  const verticalY = showTop ? '0%' : '-50%';
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -46,8 +92,15 @@ const Home = () => {
     },
   };
 
+  // Helper to build Cloudinary srcset widths
+  const responsiveWidths = [288, 576, 550, 767, 1100, 2000];
+  const buildCloudinarySrcSet = (url) =>
+    responsiveWidths
+      .map((w) => url.replace('/upload/', `/upload/w_${w}/`) + ` ${w}w`)
+      .join(', ');
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       {/* Hero Section with CSS 3D Carousel */}
       <section className="banner">
         {/* Central Brand Name */}
@@ -153,59 +206,122 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured Products */}
-      <section className="py-20 bg-gray-50">
+      {/* Gym Section (magazine style) */}
+      <section className="py-24 bg-white">
         <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            {/* Left: large visual + heading */}
+            <div>
+              <div className="w-full h-[380px] md:h-[460px] bg-gray-200 overflow-hidden relative rounded-xl md:rounded-2xl">
+                <motion.div
+                  className="absolute inset-0 h-[200%] flex flex-col"
+                  animate={{ y: verticalY }}
+                  transition={{ duration: 0.8, ease: 'easeInOut' }}
+                >
+                  <img src={gymLeftImages[0]} alt="Gym collection hero" className="w-full h-1/2 object-cover" />
+                  <img src={gymLeftImages[1]} alt="Gym collection hero alt" className="w-full h-1/2 object-cover" />
+                </motion.div>
+              </div>
+              <div className="mt-16">
+                <h2 className="font-playfair text-7xl md:text-8xl font-bold tracking-tight leading-none">
+                  GYM
+                </h2>
+                <Link
+                  to="/products?category=gym"
+                  className="group inline-flex items-center mt-8 text-black text-lg md:text-xl"
+                >
+                  <span className="mr-3">rush to buy</span>
+                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Right: single visual that slides */}
+            <div className="w-full h-[680px] md:h-[760px] bg-gray-200 overflow-hidden relative rounded-xl md:rounded-2xl">
+              <motion.div
+                className="absolute inset-0 h-[200%] flex flex-col"
+                animate={{ y: verticalY }}
+                transition={{ duration: 0.8, ease: 'easeInOut' }}
+              >
+                <img src={gymRightImages[0]} alt="Gym collection detail" className="w-full h-1/2 object-cover" />
+                <img src={gymRightImages[1]} alt="Gym collection detail alt" className="w-full h-1/2 object-cover" />
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Streetwear Section */}
+      <section className="relative min-h-[90vh] lg:min-h-screen overflow-hidden -mt-20 md:-mt-24" style={{ backgroundColor: '#D2D2D2' }}>
+        <div className="container mx-auto px-4 pt-0">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight font-teko">FEATURED PRODUCTS</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto font-light text-lg">
-              Discover our handpicked selection of premium clothing items that define modern style and comfort.
-            </p>
-          </motion.div>
-
-          {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {Array.from({ length: 8 }).map((_, index) => (
-                <div key={index} className="animate-pulse">
-                  <div className="bg-gray-300 aspect-[4/5] rounded-lg mb-4"></div>
-                  <div className="space-y-3">
-                    <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-300 rounded w-1/2"></div>
-                  </div>
+            {/* Shopify-like collection list using your images */}
+            <section id="shopify-section-template--20036439671004__section_collection_list_VcYKiK" className="shopify-section collection-list relative z-10 pt-8 md:pt-12 pb-28 md:pb-36">
+              <div className="container mx-auto">
+                <div className="collection-list__head-line section__head-line flex items-center justify-between mb-6">
+                  <div className="section__title h1"></div>
+                  <Link to="/products" className="underline-link text-sm uppercase tracking-wider">see all</Link>
                 </div>
-              ))}
+                <div className="collection-list-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {[
+                    { title: 'Hoodies', image: 'https://res.cloudinary.com/dtju1n77g/image/upload/v1754785835/888-removebg-preview_dkjfx2.png', link: '/products' },
+                    { title: 'Tees', image: 'https://res.cloudinary.com/dtju1n77g/image/upload/v1754786028/7bedca87-56f2-415f-96c8-f62571cf9924_removalai_preview_bycjvi.png', link: '/products' },
+                    { title: 'Longsleeves', image: 'https://res.cloudinary.com/dtju1n77g/image/upload/v1754786968/3449e2f7-c033-42d8-acb7-2ce23061fb2f_removalai_preview_j8hfkz.png', link: '/products' },
+                    { title: 'Bottoms', image: 'https://res.cloudinary.com/dtju1n77g/image/upload/v1754786258/53bb0846-d53b-4b68-b867-4a9910db5c20_removalai_preview_rovcya.png', link: '/products' },
+                  ].map((item, idx) => (
+                    <div key={idx} className="collection-list-grid-item">
+                      <Link to={item.link} className="collection-item-image block group overflow-hidden">
+                        <picture>
+                          <img
+                            src={item.image}
+                            alt={item.title}
+                            width="1200"
+                            height="1200"
+                            loading="lazy"
+                            srcSet={buildCloudinarySrcSet(item.image)}
+                            sizes="(min-width: 1100px) 1100px,(max-width: 767px) 767px,(max-width: 576px) 567px,(max-width: 550px) 550px,(max-width: 288px) 288px,100vw"
+                            className="w-full h-[560px] md:h-[calc(100vh-240px)] lg:h-[calc(100vh-280px)] object-cover transform transition-transform duration-500 scale-100 group-hover:scale-110"
+                          />
+                        </picture>
+                      </Link>
+                      <Link to={item.link} className="collection-item-title block mt-4 md:mt-5 text-center uppercase tracking-widest text-base md:text-lg">
+                        {item.title}
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+ 
+            {/* Exact Shopify-like wave block using provided classes */}
+            <div className="section-template--20036439671004__wave_new_LbgNdL pointer-events-none absolute bottom-0 left-0 right-0">
+              <div className="section-template--20036439671004__wave_new_LbgNdL-settings">
+                <div className="wave-item-template--20036439671004__wave_new_LbgNdL">
+                  <svg className="waves-animated-1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none">
+                    <defs>
+                      <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"></path>
+                    </defs>
+                    <g className="wave-parallax1-template--20036439671004__wave_new_LbgNdL">
+                      <use xlinkHref="#gentle-wave" x="50" y="3" fill="currentColor"></use>
+                    </g>
+                    <g className="wave-parallax2-template--20036439671004__wave_new_LbgNdL">
+                      <use xlinkHref="#gentle-wave" x="50" y="0" fill="currentColor"></use>
+                    </g>
+                    <g className="wave-parallax3-template--20036439671004__wave_new_LbgNdL">
+                      <use xlinkHref="#gentle-wave" x="50" y="9" fill="currentColor"></use>
+                    </g>
+                    <g className="wave-parallax4-template--20036439671004__wave_new_LbgNdL">
+                      <use xlinkHref="#gentle-wave" x="50" y="6" fill="currentColor"></use>
+                    </g>
+                  </svg>
+                </div>
+              </div>
             </div>
-          ) : (
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
-            >
-              {featuredProducts.slice(0, 8).map((product, index) => (
-                <ProductCard key={product.id} product={product} index={index} />
-              ))}
-            </motion.div>
-          )}
-
-          <div className="text-center mt-16">
-            <Link to="/products">
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="border-2 border-black text-black hover:bg-black hover:text-white font-medium tracking-wide px-8 py-3"
-              >
-                VIEW ALL PRODUCTS
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
+          </motion.div>
         </div>
       </section>
 

@@ -96,29 +96,29 @@ const Header = () => {
             </Link>
 
             {/* Shopping Cart */}
-            <button
+            <Button
               onClick={handleCartClick}
-              className="relative"
+              variant="ghost"
+              size="icon"
+              className="relative text-gray-300 hover:text-white"
             >
-              <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white">
-                <ShoppingBag className="h-5 w-5" />
-                {totalQuantity > 0 && (
-                  <span className="absolute -right-1 -top-1 h-5 w-5 rounded-full bg-white text-xs text-black flex items-center justify-center">
-                    {totalQuantity}
-                  </span>
-                )}
-              </Button>
-            </button>
+              <ShoppingBag className="h-5 w-5" />
+              {totalQuantity > 0 && (
+                <span className="absolute -right-1 -top-1 h-5 w-5 rounded-full bg-white text-xs text-black flex items-center justify-center">
+                  {totalQuantity}
+                </span>
+              )}
+            </Button>
 
             {/* Mobile Menu Button */}
-            <button
+            <Button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden"
+              variant="ghost"
+              size="icon"
+              className="md:hidden text-gray-300 hover:text-white"
             >
-              <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white">
-                {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
-            </button>
+              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
           </div>
         </div>
 

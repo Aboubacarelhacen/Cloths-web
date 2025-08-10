@@ -206,6 +206,58 @@ export const mockProducts = [
     reviews: 86,
     featured: false,
   },
+  // Gym products
+  {
+    id: 13,
+    name: "Performance Compression Tee",
+    price: 34.99,
+    category: "gym",
+    description: "Breathable compression t‑shirt for high‑intensity training.",
+    images: [
+      "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=500&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=500&h=600&fit=crop"
+    ],
+    sizes: ["S", "M", "L", "XL"],
+    colors: ["Black", "Gray", "Navy"],
+    inStock: true,
+    rating: 4.6,
+    reviews: 112,
+    featured: true,
+  },
+  {
+    id: 14,
+    name: "Seamless Gym Leggings",
+    price: 42.99,
+    category: "gym",
+    description: "Seamless squat‑proof leggings with four‑way stretch.",
+    images: [
+      "https://images.unsplash.com/photo-1519741497674-611481863552?w=500&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1519741497674-611481863552?w=500&h=600&fit=crop"
+    ],
+    sizes: ["XS", "S", "M", "L"],
+    colors: ["Black", "Burgundy", "Olive"],
+    inStock: true,
+    rating: 4.7,
+    reviews: 158,
+    featured: false,
+  },
+  {
+    id: 15,
+    name: "Training Shorts 7\"",
+    price: 29.99,
+    category: "gym",
+    description: "Lightweight quick‑dry shorts with zip pockets.",
+    images: [
+      "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500&h=600&fit=crop"
+    ],
+    sizes: ["S", "M", "L", "XL"],
+    colors: ["Black", "Gray"],
+    inStock: true,
+    rating: 4.4,
+    reviews: 76,
+    featured: false,
+  },
 ];
 
 export const categories = [
@@ -214,6 +266,7 @@ export const categories = [
   { id: 'women', name: 'Women', count: mockProducts.filter(p => p.category === 'women').length },
   { id: 'kids', name: 'Kids', count: mockProducts.filter(p => p.category === 'kids').length },
   { id: 'accessories', name: 'Accessories', count: mockProducts.filter(p => p.category === 'accessories').length },
+  { id: 'gym', name: 'Gym', count: mockProducts.filter(p => p.category === 'gym').length },
 ];
 
 export const featuredProducts = mockProducts.filter(product => product.featured);

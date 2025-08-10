@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { categories as staticCategories } from '../../data/mockData';
 
 // Async thunk for fetching products (will use mock data for now)
 export const fetchProducts = createAsyncThunk(
@@ -52,7 +53,7 @@ const productsSlice = createSlice({
     currentProduct: null,
     loading: false,
     error: null,
-    categories: ['all', 'men', 'women', 'kids', 'accessories'],
+    categories: staticCategories,
     totalPages: 1,
     currentPage: 1,
   },

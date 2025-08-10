@@ -8,6 +8,7 @@ export default {
     extend: {
       fontFamily: {
         'teko': ['Teko', 'sans-serif'],
+        'playfair': ['"Playfair Display"', 'serif'],
       },
     },
   },
